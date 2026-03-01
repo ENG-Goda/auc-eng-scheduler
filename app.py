@@ -81,7 +81,7 @@ with st.container():
 st.sidebar.title("Area 51 (Top Secret) 🤫")
 if st.sidebar.checkbox("أنا محمود جودة شخصياً"):
     pw = st.sidebar.text_input("باسورد المهندس", type="password")
-    if pw == "Vantrox2026":
+    if pw == "010405":
         st.header("📊 إحصائيات السهرة")
         
         if not st.session_state.data.empty:
@@ -96,3 +96,4 @@ if st.sidebar.checkbox("أنا محمود جودة شخصياً"):
             st.dataframe(pivot.style.background_gradient(cmap='Blues'))
         else:
             st.info("لسه مفيش حد سجل.. أول ما يسجلوا الداتا هتظهرلك هنا.")
+
