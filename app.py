@@ -2,99 +2,84 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# إعدادات الصفحة والبراندينج الخاص بـ VANTROX
+# إعدادات الصفحة الاحترافية
 st.set_page_config(page_title="AUC English Club - Vantrox Edition", page_icon="😎", layout="centered")
 
-# CSS احترافي لضبط الاتجاه (RTL) وتنسيق الألوان
+# حتة الصياعة: إخفاء أي أثر لـ Streamlit (الهيدر، الفوتر، والمنيو) عشان يبان موقعك الشخصي
 st.markdown("""
     <style>
-    /* تنسيق الجسم الرئيسي والخطوط */
-    .main { 
-        background-color: #f5f7f9; 
-        direction: rtl; 
-        text-align: right; 
-    }
-    
-    /* ضبط اتجاه النصوص والعناوين */
-    h1, h2, h3, h4, h5, h6, p, span, label, div { 
-        direction: rtl; 
-        text-align: right; 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    /* تنسيق الزرار عشان يبقى مالي الشاشة وشكله شيك */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
     .stButton>button { 
         width: 100%; 
-        border-radius: 20px; 
+        border-radius: 25px; 
         background-color: #007bff; 
-        color: white; 
+        color: white;
+        height: 3em;
         font-weight: bold;
         border: none;
-        padding: 10px;
     }
-    
-    /* لمسة جمالية للقوائم المنسدلة */
-    .stMultiSelect div {
-        direction: rtl;
+    .main { background-color: #f8f9fa; }
+    div[data-testid="stExpander"] { border: none; box-shadow: none; }
+    /* تحسين العرض على الموبايل */
+    @media (max-width: 600px) {
+        .reportview-container { padding-top: 0px; }
     }
     </style>
     """, unsafe_allow_html=True)
 
-# محاكاة لقاعدة البيانات (Session State)
+# الهيدر بلمسة Vantrox
+st.title("🚀 دحيحة الأنجليزي في ال AUC")
+st.write("أهلاً يا شباب.. محمود جودة بيمسي، وعشان إنتم نايمين في مايه البطيخ، عملتلكم السيستم ده عشان ننجز ونظبط مواعيد الرومات.")
+
+# قاعدة بيانات مؤقتة (Session State)
 if 'data' not in st.session_state:
     st.session_state.data = pd.DataFrame(columns=['Name', 'Day', 'Time'])
 
-# الواجهة الرئيسية
-st.title("🚀 دحيحة AUC في الإنجليزي")
-st.write("أهلاً يا شباب.. محمود جودة بيمسي، وعشان إنتو نايمين في مايه البطيخ , عملتلكم السيستم ده عشان ننجز ونظبط مواعيد الرومات.")
-
-# --- فورم التسجيل ---
+# --- فورم التسجيل (User Interface) ---
 with st.container():
-    with st.form("pro_form", clear_on_submit=True):
-        st.subheader("سجل حضورك يا بطل 👇")
-        
-        name = st.text_input("اسمك المنور (عشان نعرف مين اللي هيسحلنا معاه)")
-        
-        days = st.multiselect("اختار أكتر يومين 'رايقين' معاك في الأسبوع", 
-                            ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
-                            max_selections=2)
-        
-        times = st.multiselect("أفضل مواعيد (ماتختارش وقت الماتشات بالله عليك)", 
-                             ['6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM', '10:00 PM', '11:00 PM'])
-        
-        submit = st.form_submit_button("إرسال الاختيارات 🚀")
-        
-        if submit:
-            if name and len(days) == 2 and times:
-                # إضافة البيانات للجدول
-                for day in days:
-                    for time in times:
-                        new_row = pd.DataFrame([{'Name': name, 'Day': day, 'Time': time}])
-                        st.session_state.data = pd.concat([st.session_state.data, new_row], ignore_index=True)
-                
-                st.success(f"وصل يا {name.split()[0]}! استنى بقى لما أشوف باقي الشلة ونقرر.")
-                st.balloons()
-            else:
-                st.error("يا هندسة ركز.. محتاجين اسمك ويومين بالظبط عشان السيستم يقبل!")
+    st.subheader("سجل حضورك  👇")
+    name = st.text_input("اسمك المنور (عشان نعرف مين اللي هيسحلنا معاه)")
+    
+    days = st.multiselect("اختار أكتر يومين 'رايقين' معاك في الأسبوع", 
+                        ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
+                        max_selections=2)
+    
+    times = st.multiselect("أفضل مواعيد (ماتختارش وقت الماتشات بالله عليك)", 
+                         ['6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM', '10:00 PM', '11:00 PM'])
+    
+    submit = st.form_submit_button("إرسال الاختيارات 🚀") if 'form_sub' not in st.session_state else None
 
-# --- لوحة تحكم محمود (الـ Admin) ---
-st.sidebar.title("Area 51 (Top Secret) 🤫")
-if st.sidebar.checkbox("أنا محمود جودة شخصياً"):
-    pw = st.sidebar.text_input("باسورد المهندس", type="password")
-    if pw == "010405":
-        st.header("📊 إحصائيات السهرة")
-        
+    # بديل للـ Form التقليدية عشان نتحكم في الشكل أكتر
+    if st.button("تأكيد وإرسال 🚀"):
+        if name and len(days) == 2 and times:
+            for day in days:
+                for time in times:
+                    new_entry = {'Name': name, 'Day': day, 'Time': time}
+                    st.session_state.data = pd.concat([st.session_state.data, pd.DataFrame([new_entry])], ignore_index=True)
+            st.success(f"وصل يا {name.split()[0]}! استنى بقى لما أشوف باقي الشلة ونقرر.")
+            st.balloons()
+        else:
+            st.error("يا أستاذ/أستاذه ركزو.. محتاجين اسمك ويومين بالظبط!")
+
+st.divider()
+
+# --- لوحة تحكم المهندس (Admin Dashboard) ---
+# مخفية تحت في "Expander" ومحمية بباسورد عشان ما تبوظش شكل الموبايل
+with st.expander("Admin Access (Mahmoud Only) 🤫"):
+    password = st.text_input("كلمة السر", type="password")
+    if password == "011405":
+        st.header("📊 تحليلات البيانات - VANTROX")
         if not st.session_state.data.empty:
             # Chart الأيام
-            df_days = st.session_state.data['Day'].value_counts().reset_index()
-            fig_days = px.bar(df_days, x='Day', y='count', title="أكتر الأيام المطلوبة", color_discrete_sequence=['#007bff'])
-            st.plotly_chart(fig_days)
+            fig_days = px.bar(st.session_state.data['Day'].value_counts().reset_index(), 
+                             x='Day', y='count', title="أكتر أيام مطلوبة", color_discrete_sequence=['#007bff'])
+            st.plotly_chart(fig_days, use_container_width=True)
             
             # Heatmap المواعيد
-            st.write("### مصفوفة المواعيد (الخلاصة)")
-            pivot = st.session_state.data.pivot_table(index='Time', columns='Day', aggfunc='size', fill_value=0)
-            st.dataframe(pivot.style.background_gradient(cmap='Blues'))
+            st.write("### مصفوفة المواعيد (Heatmap)")
+            pivot_df = st.session_state.data.pivot_table(index='Time', columns='Day', aggfunc='size', fill_value=0)
+            st.dataframe(pivot_df, use_container_width=True)
         else:
-            st.info("لسه مفيش حد سجل.. أول ما يسجلوا الداتا هتظهرلك هنا.")
-
-
+            st.info("لسه مفيش داتا دخلت يا هندسة.")
