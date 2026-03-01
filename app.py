@@ -29,7 +29,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # الهيدر بلمسة Vantrox
-st.title("🚀 دحيحة الأنجليزي في ال AUC")
+st.title("🚀 دحيحة الإنجليزي في AUC")
 st.write("أهلاً يا شباب.. محمود جودة بيمسي، وعشان إنتم نايمين في مايه البطيخ، عملتلكم السيستم ده عشان ننجز ونظبط مواعيد الرومات.")
 
 # قاعدة بيانات مؤقتة (Session State)
@@ -58,7 +58,7 @@ with st.container():
             st.success(f"وصل يا {name.split()[0]}! استنى بقى لما أشوف باقي الشلة ونقرر.")
             st.balloons()
         else:
-            st.error("يا أستاذ/أستاذه ركزو.. محتاجين اسمك ويومين بالظبط!")
+            st.error(" ركز.. محتاجين اسمك ويومين بالظبط!")
 
 st.divider()
 
@@ -79,3 +79,4 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
             st.dataframe(pivot_df, use_container_width=True)
         else:
             st.info("لسه مفيش داتا دخلت يا هندسة.")
+
