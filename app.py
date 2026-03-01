@@ -3,9 +3,9 @@ import pandas as pd
 import plotly.express as px
 
 # إعدادات الصفحة الاحترافية
-st.set_page_config(page_title="AUC English Club - Vantrox Edition", page_icon="😎", layout="centered")
+st.set_config = st.set_page_config(page_title="AUC English Club - Vantrox Edition", page_icon="😎", layout="centered")
 
-# حتة الصياعة: إخفاء أي أثر لـ Streamlit (الهيدر، الفوتر، والمنيو) عشان يبان موقعك الشخصي
+# حتة الصياعة: إخفاء أي أثر لـ Streamlit
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -21,7 +21,6 @@ st.markdown("""
         border: none;
     }
     .main { background-color: #f8f9fa; }
-    div[data-testid="stExpander"] { border: none; box-shadow: none; }
     /* تحسين العرض على الموبايل */
     @media (max-width: 600px) {
         .reportview-container { padding-top: 0px; }
@@ -49,10 +48,8 @@ with st.container():
     times = st.multiselect("أفضل مواعيد (ماتختارش وقت الماتشات بالله عليك)", 
                          ['6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM', '10:00 PM', '11:00 PM'])
     
-    submit = st.form_submit_button("إرسال الاختيارات 🚀") if 'form_sub' not in st.session_state else None
-
-    # بديل للـ Form التقليدية عشان نتحكم في الشكل أكتر
-    if st.button("تأكيد وإرسال 🚀"):
+    # الزرار الاحترافي
+    if st.button("تأكيد وإرسال الاختيارات 🚀"):
         if name and len(days) == 2 and times:
             for day in days:
                 for time in times:
@@ -66,7 +63,6 @@ with st.container():
 st.divider()
 
 # --- لوحة تحكم المهندس (Admin Dashboard) ---
-# مخفية تحت في "Expander" ومحمية بباسورد عشان ما تبوظش شكل الموبايل
 with st.expander("Admin Access (Mahmoud Only) 🤫"):
     password = st.text_input("كلمة السر", type="password")
     if password == "011405":
