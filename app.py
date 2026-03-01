@@ -11,7 +11,7 @@ st.markdown("""
     .stButton>button { width: 100%; border-radius: 20px; background-color: #007bff; color: white; }
     .main { background-color: #f5f7f9; }
     </style>
-    """, unsafe_allow_index=True)
+    """, unsafe_allow_html=True)
 
 st.title("🚀 دحيحة الإنجليزي في AUC")
 st.write("أهلاً يا شباب.. محمود جودة بيمسي، وعشان إحنا مهندسين مش بتوع ورق وقلم، عملتلكم السيستم ده عشان ننجز ونظبط مواعيد الرومات.")
@@ -46,4 +46,5 @@ if st.sidebar.checkbox("أنا محمود جودة شخصياً"):
     if pw == "VantroxAdmin":
         st.header("📊 إحصائيات السهرة")
         st.info("هنا بنشوف مين اللي مسيطر على المواعيد")
+
         # هنا هتحط الـ Charts زي الكود اللي فات
