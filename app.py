@@ -7,7 +7,7 @@ import time
 # إعدادات الصفحة بروح VANTROX
 st.set_page_config(page_title="AUC English Club - Vantrox", page_icon="🚀", layout="centered")
 
-DB_FILE = "auc_data.csv"
+DB_FILE = "auc_v2_data.csv"
 
 def load_data():
     if os.path.exists(DB_FILE):
@@ -91,3 +91,4 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
                     st.rerun()
         else:
             st.info("قاعدة البيانات لسه فاضية أو محتاجة أول تسجيل بالنسخة الجديدة.")
+
