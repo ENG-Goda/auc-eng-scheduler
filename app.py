@@ -17,7 +17,7 @@ def load_data():
             return pd.DataFrame(columns=['Name', 'Days', 'Times'])
     return pd.DataFrame(columns=['Name', 'Days', 'Times'])
 
-# CSS احترافي لإخفاء معالم المنصة
+# CSS احترافي لإخفاء معالم المنصة وتجميل صندوق الملخص
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
@@ -25,6 +25,13 @@ st.markdown("""
         width: 100%; border-radius: 50px; 
         background: linear-gradient(45deg, #007bff, #00d4ff);
         color: white; height: 3.5em; font-weight: bold; border: none;
+    }
+    .summary-box {
+        background-color: #f0f2f6;
+        border-radius: 15px;
+        padding: 20px;
+        border-left: 5px solid #007bff;
+        margin-bottom: 20px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -66,25 +73,43 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
     if password == "011405":
         data = load_data()
         if not data.empty and 'Days' in data.columns:
-            st.subheader("📊 تحليل المواعيد")
+            
+            # --- التعديل الجديد: حساب ملخص النتائج ---
             all_days = []
             for d in data['Days'].dropna():
                 all_days.extend(d.split(", "))
             
+            all_times = []
+            for t in data['Times'].dropna():
+                all_times.extend(t.split(", "))
+
+            # تحديد التوب
+            top_days = pd.Series(all_days).value_counts().head(2).index.tolist()
+            top_times = pd.Series(all_times).value_counts().head(2).index.tolist()
+
+            # عرض المربع المختصر للسكرين شوت
+            st.subheader("📝 ملخص نتيحة التصويت (VANTROX Insights)")
+            summary_html = f"""
+            <div class="summary-box">
+                <h4 style='color: #007bff; margin-top:0;'>📌 الخلاصة لزوم السكرين شوت:</h4>
+                <p>✅ <b>أكثر يومين مطلوبين:</b> {', '.join(top_days)}</p>
+                <p>⏰ <b>أفضل ميعادين للرومات:</b> {', '.join(top_times)}</p>
+                <p>👥 <b>إجمالي عدد المسجلين حتى الآن:</b> {len(data['Name'].unique())} طالب</p>
+            </div>
+            """
+            st.markdown(summary_html, unsafe_allow_html=True)
+
+            st.subheader("📊 تحليل المواعيد التفصيلي")
             if all_days:
                 day_counts = pd.Series(all_days).value_counts().reset_index()
                 day_counts.columns = ['اليوم', 'عدد الطلاب']
                 fig = px.bar(day_counts, x='اليوم', y='عدد الطلاب', color='عدد الطلاب', 
                              color_continuous_scale='Blues', text_auto=True)
                 
-                # --- التعديل 1: إجبار التشارت على عرض أرقام صحيحة فقط ---
-                fig.update_yaxes(tickformat=',d')
-                
+                fig.update_yaxes(tickformat=',d') # أرقام صحيحة
                 st.plotly_chart(fig, use_container_width=True)
             
             st.write("### قائمة المسجلين:")
-            
-            # --- التعديل 2: البدء من رقم 1 في العرض بدون مسح الداتا ---
             display_df = data.copy()
             display_df.index = display_df.index + 1
             st.table(display_df)
