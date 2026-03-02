@@ -56,7 +56,7 @@ with st.container():
             time.sleep(2)
             st.rerun()
         else:
-            st.error(" ركز يا برنس.. محتاجين الاسم، و 3 أيام، وميعادين بالظبط!")
+            st.error(" ركز يا برنس.. محتاجين الاسم، ويومين، وميعادين بالظبط!")
 
 st.divider()
 
@@ -65,7 +65,6 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
     password = st.text_input("كلمة السر", type="password")
     if password == "011405":
         data = load_data()
-        # التأكد من وجود العمود الجديد لتجنب الـ KeyError
         if not data.empty and 'Days' in data.columns:
             st.subheader("📊 تحليل المواعيد")
             all_days = []
@@ -77,10 +76,18 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
                 day_counts.columns = ['اليوم', 'عدد الطلاب']
                 fig = px.bar(day_counts, x='اليوم', y='عدد الطلاب', color='عدد الطلاب', 
                              color_continuous_scale='Blues', text_auto=True)
+                
+                # --- التعديل 1: إجبار التشارت على عرض أرقام صحيحة فقط ---
+                fig.update_yaxes(tickformat=',d')
+                
                 st.plotly_chart(fig, use_container_width=True)
             
             st.write("### قائمة المسجلين:")
-            st.table(data)
+            
+            # --- التعديل 2: البدء من رقم 1 في العرض بدون مسح الداتا ---
+            display_df = data.copy()
+            display_df.index = display_df.index + 1
+            st.table(display_df)
             
             # حذف تسجيل
             name_to_delete = st.selectbox("حذف طالب:", ["اختار اسم..."] + data['Name'].unique().tolist())
@@ -91,10 +98,3 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
                     st.rerun()
         else:
             st.info("قاعدة البيانات لسه فاضية أو محتاجة أول تسجيل بالنسخة الجديدة.")
-
-
-
-
-
-
-
