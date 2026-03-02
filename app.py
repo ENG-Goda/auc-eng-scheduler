@@ -1,82 +1,65 @@
 import streamlit as st
+from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import plotly.express as px
 
-# إعدادات الصفحة الاحترافية
-st.set_config = st.set_page_config(page_title="AUC English Club - Vantrox Edition", page_icon="😎", layout="centered")
+# إعدادات الصفحة
+st.set_page_config(page_title="AUC English Club - Vantrox", page_icon="😎")
 
-# حتة الصياعة: إخفاء أي أثر لـ Streamlit
-st.markdown("""
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .stButton>button { 
-        width: 100%; 
-        border-radius: 25px; 
-        background-color: #007bff; 
-        color: white;
-        height: 3em;
-        font-weight: bold;
-        border: none;
-    }
-    .main { background-color: #f8f9fa; }
-    /* تحسين العرض على الموبايل */
-    @media (max-width: 600px) {
-        .reportview-container { padding-top: 0px; }
-    }
-    </style>
-    """, unsafe_allow_html=True)
+# الربط بجوجل شيت
+conn = st.connection("gsheets", type=GSheetsConnection)
 
-# الهيدر بلمسة Vantrox
-st.title("🚀 دحيحة الإنجليزي في AUC")
-st.write("أهلاً يا شباب.. محمود جودة بيمسي، وعشان إنتم نايمين في مايه البطيخ، عملتلكم السيستم ده عشان ننجز ونظبط مواعيد الرومات.")
+# دالة لجلب البيانات وتحديثها
+def get_data():
+    return conn.read(worksheet="Sheet1", ttl=0) # ttl=0 عشان يقرأ الداتا الجديدة فوراً
 
-# قاعدة بيانات مؤقتة (Session State)
-if 'data' not in st.session_state:
-    st.session_state.data = pd.DataFrame(columns=['Name', 'Day', 'Time'])
+# إخفاء معالم Streamlit
+st.markdown("<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}</style>", unsafe_allow_html=True)
 
-# --- فورم التسجيل (User Interface) ---
-with st.container():
-    st.subheader("سجل حضورك  👇")
-    name = st.text_input("اسمك المنور (عشان نعرف مين اللي هيسحلنا معاه)")
-    
-    days = st.multiselect("اختار أكتر يومين 'رايقين' معاك في الأسبوع", 
-                        ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
-                        max_selections=2)
-    
-    times = st.multiselect("أفضل مواعيد (ماتختارش وقت الماتشات بالله عليك)", 
-                         ['6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM', '10:00 PM', '11:00 PM'])
-    
-    # الزرار الاحترافي
-    if st.button("تأكيد وإرسال الاختيارات 🚀"):
-        if name and len(days) == 2 and times:
-            for day in days:
-                for time in times:
-                    new_entry = {'Name': name, 'Day': day, 'Time': time}
-                    st.session_state.data = pd.concat([st.session_state.data, pd.DataFrame([new_entry])], ignore_index=True)
-            st.success(f"وصل يا {name.split()[0]}! استنى بقى لما أشوف باقي الشلة ونقرر.")
-            st.balloons()
-        else:
-            st.error(" ركز.. محتاجين اسمك ويومين بالظبط!")
+st.title("🚀 دحيحة الأنجليزي في ال AUC")
+st.write("سجل مواعيدك وهتتحفظ في قاعدة بيانات VANTROX فوراً.")
+
+# --- فورم التسجيل ---
+name = st.text_input("اسمك المنور")
+days = st.multiselect("اختار يومين", ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'], max_selections=2)
+times = st.multiselect("أفضل مواعيد", ['6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM', '10:00 PM', '11:00 PM'])
+
+if st.button("تأكيد وإرسال الاختيارات 🚀"):
+    if name and len(days) == 2 and times:
+        # 1. جلب البيانات القديمة أولاً
+        existing_df = get_data()
+        
+        # 2. تجهيز الصفوف الجديدة
+        new_entries = []
+        for day in days:
+            for time in times:
+                new_entries.append({"Name": name, "Day": day, "Time": time})
+        
+        new_df = pd.DataFrame(new_entries)
+        
+        # 3. دمج القديم والجديد
+        updated_df = pd.concat([existing_df, new_df], ignore_index=True)
+        
+        # 4. رفع الكل للشيت (ده الحل النهائي للتخزين)
+        conn.update(worksheet="Sheet1", data=updated_df)
+        
+        st.success("تم الحفظ بنجاح! نورت قاعدة بياناتنا يا هندسة.")
+        st.balloons()
+    else:
+        st.error("كمل بياناتك يا برنس.. محتاجين الاسم ويومين بالظبط!")
 
 st.divider()
 
-# --- لوحة تحكم المهندس (Admin Dashboard) ---
+# --- لوحة تحكم محمود جودة ---
 with st.expander("Admin Access (Mahmoud Only) 🤫"):
     password = st.text_input("كلمة السر", type="password")
     if password == "011405":
-        st.header("📊 تحليلات البيانات - VANTROX")
-        if not st.session_state.data.empty:
-            # Chart الأيام
-            fig_days = px.bar(st.session_state.data['Day'].value_counts().reset_index(), 
-                             x='Day', y='count', title="أكتر أيام مطلوبة", color_discrete_sequence=['#007bff'])
-            st.plotly_chart(fig_days, use_container_width=True)
-            
-            # Heatmap المواعيد
-            st.write("### مصفوفة المواعيد (Heatmap)")
-            pivot_df = st.session_state.data.pivot_table(index='Time', columns='Day', aggfunc='size', fill_value=0)
-            st.dataframe(pivot_df, use_container_width=True)
+        # قراءة البيانات لايف من الشيت
+        current_data = get_data()
+        if not current_data.empty:
+            st.write("إحصائيات المواعيد الحالية:")
+            fig = px.bar(current_data['Day'].value_counts().reset_index(), x='Day', y='count', color_discrete_sequence=['#007bff'])
+            st.plotly_chart(fig, use_container_width=True)
+            st.dataframe(current_data) # عشان تشوف الأسماء بنفسك
         else:
-            st.info("لسه مفيش داتا دخلت يا هندسة.")
-
+            st.info("لسه مفيش حد سجل.")
