@@ -17,7 +17,7 @@ def load_data():
             return pd.DataFrame(columns=['Name', 'Days', 'Times'])
     return pd.DataFrame(columns=['Name', 'Days', 'Times'])
 
-# CSS احترافي لإخفاء معالم المنصة وتجميل صندوق الملخص
+# CSS احترافي مطور لضمان وضوح الخط في السكرين شوت
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
@@ -27,11 +27,15 @@ st.markdown("""
         color: white; height: 3.5em; font-weight: bold; border: none;
     }
     .summary-box {
-        background-color: #f0f2f6;
+        background-color: #f8f9fa;
         border-radius: 15px;
-        padding: 20px;
-        border-left: 5px solid #007bff;
-        margin-bottom: 20px;
+        padding: 25px;
+        border: 2px solid #007bff;
+        margin-top: 30px;
+        color: #1a1a1a !important; /* لون خط أسود غامق جداً */
+    }
+    .summary-box h4, .summary-box p, .summary-box b {
+        color: #1a1a1a !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -74,32 +78,11 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
         data = load_data()
         if not data.empty and 'Days' in data.columns:
             
-            # --- التعديل الجديد: حساب ملخص النتائج ---
+            st.subheader("📊 تحليل المواعيد التفصيلي")
             all_days = []
             for d in data['Days'].dropna():
                 all_days.extend(d.split(", "))
             
-            all_times = []
-            for t in data['Times'].dropna():
-                all_times.extend(t.split(", "))
-
-            # تحديد التوب
-            top_days = pd.Series(all_days).value_counts().head(2).index.tolist()
-            top_times = pd.Series(all_times).value_counts().head(2).index.tolist()
-
-            # عرض المربع المختصر للسكرين شوت
-            st.subheader("📝 ملخص نتيحة التصويت (VANTROX Insights)")
-            summary_html = f"""
-            <div class="summary-box">
-                <h4 style='color: #007bff; margin-top:0;'>📌 الخلاصة لزوم السكرين شوت:</h4>
-                <p>✅ <b>أكثر يومين مطلوبين:</b> {', '.join(top_days)}</p>
-                <p>⏰ <b>أفضل ميعادين للرومات:</b> {', '.join(top_times)}</p>
-                <p>👥 <b>إجمالي عدد المسجلين حتى الآن:</b> {len(data['Name'].unique())} طالب</p>
-            </div>
-            """
-            st.markdown(summary_html, unsafe_allow_html=True)
-
-            st.subheader("📊 تحليل المواعيد التفصيلي")
             if all_days:
                 day_counts = pd.Series(all_days).value_counts().reset_index()
                 day_counts.columns = ['اليوم', 'عدد الطلاب']
@@ -111,10 +94,31 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
             
             st.write("### قائمة المسجلين:")
             display_df = data.copy()
-            display_df.index = display_df.index + 1
+            display_df.index = display_df.index + 1 # البدء من 1
             st.table(display_df)
             
+            # --- المربع المختصر في آخر الصفحة ---
+            st.divider()
+            all_times = []
+            for t in data['Times'].dropna():
+                all_times.extend(t.split(", "))
+
+            top_days = pd.Series(all_days).value_counts().head(2).index.tolist()
+            top_times = pd.Series(all_times).value_counts().head(2).index.tolist()
+
+            st.subheader("📝 النتيجة النهائية (VANTROX Insights)")
+            summary_html = f"""
+            <div class="summary-box">
+                <p style='font-size: 20px;'>📌 <b>الخلاصة لزوم السكرين شوت:</b></p>
+                <p style='font-size: 18px;'>✅ <b>أكثر يومين مطلوبين:</b> {', '.join(top_days)}</p>
+                <p style='font-size: 18px;'>⏰ <b>أفضل ميعادين للرومات:</b> {', '.join(top_times)}</p>
+                <p style='font-size: 18px;'>👥 <b>إجمالي عدد المسجلين:</b> {len(data['Name'].unique())} طالب</p>
+            </div>
+            """
+            st.markdown(summary_html, unsafe_allow_html=True)
+
             # حذف تسجيل
+            st.divider()
             name_to_delete = st.selectbox("حذف طالب:", ["اختار اسم..."] + data['Name'].unique().tolist())
             if st.button("حذف نهائي ❌"):
                 if name_to_delete != "اختار اسم...":
@@ -122,4 +126,4 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
                     new_df.to_csv(DB_FILE, index=False)
                     st.rerun()
         else:
-            st.info("قاعدة البيانات لسه فاضية أو محتاجة أول تسجيل بالنسخة الجديدة.")
+            st.info("قاعدة البيانات لسه فاضية.")
