@@ -109,7 +109,7 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
             st.subheader("📝 النتيجة النهائية (VANTROX Insights)")
             summary_html = f"""
             <div class="summary-box">
-                <p style='font-size: 20px;'>📌 <b>الخلاصة لزوم السكرين شوت:</b></p>
+                <p style='font-size: 20px;'>📌 <b>Final Result:</b></p>
                 <p style='font-size: 18px;'>✅ <b>أكثر يومين مطلوبين:</b> {', '.join(top_days)}</p>
                 <p style='font-size: 18px;'>⏰ <b>أفضل ميعادين للرومات:</b> {', '.join(top_times)}</p>
                 <p style='font-size: 18px;'>👥 <b>إجمالي عدد المسجلين:</b> {len(data['Name'].unique())} طالب</p>
@@ -127,3 +127,4 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
                     st.rerun()
         else:
             st.info("قاعدة البيانات لسه فاضية.")
+
