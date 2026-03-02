@@ -9,11 +9,11 @@ st.set_page_config(page_title="AUC English Club - Vantrox", page_icon="😎", la
 # الربط بجوجل شيت (قاعدة البيانات)
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# دالة لجلب البيانات وتحديثها (بدون تحديد اسم الورقة لتجنب أخطاء اللغة)
+# دالة لجلب البيانات وتحديثها فوراً
 def get_data():
     return conn.read(ttl=0)
 
-# إخفاء معالم Streamlit عشان يبان شغلك الشخصي
+# إخفاء معالم المنصة عشان البراندينج بتاع Vantrox
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -32,7 +32,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# الهيدر بلمسة محمود جودة
+# الهيدر بلمستك الخاصة
 st.title("🚀 دحيحة الأنجليزي في ال AUC")
 st.write("أهلاً يا شباب.. محمود جودة بيمسي، وعشان إنتم نايمين في مايه البطيخ، عملتلكم السيستم ده عشان ننجز ونظبط مواعيد الرومات.")
 
@@ -61,9 +61,11 @@ with st.container():
             
             new_df = pd.DataFrame(new_entries)
             
-            # 3. دمج ورفع البيانات (الحل النهائي للتخزين)
+            # 3. دمج البيانات
             updated_df = pd.concat([existing_df, new_df], ignore_index=True)
-            conn.update(data=updated_df)
+            
+            # 4. التحديث النهائي في جوجل شيت (السطر اللي طلبته يا هندسة)
+            conn.update(worksheet="الورقة1", data=updated_df)
             
             st.success(f"وصل يا {name.split()[0]}! بياناتك اتحفظت في قاعدة بيانات VANTROX للأبد.")
             st.balloons()
@@ -77,6 +79,7 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
     password = st.text_input("كلمة السر", type="password")
     if password == "011405":
         st.header("📊 تحليلات البيانات - VANTROX")
+        # قراءة البيانات لايف
         current_data = get_data()
         if not current_data.empty:
             # Chart الأيام
@@ -84,8 +87,8 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
                              x='Day', y='count', title="أكتر أيام مطلوبة", color_discrete_sequence=['#007bff'])
             st.plotly_chart(fig_days, use_container_width=True)
             
-            # عرض الجدول
-            st.write("### الأسماء والمواعيد المسجلة:")
+            # عرض الجدول كامل
+            st.write("### الأسماء والمواعيد المسجلة حالياً:")
             st.dataframe(current_data, use_container_width=True)
         else:
-            st.info("لسه مفيش داتا دخلت يا هندسة.")
+            st.info("قاعدة البيانات لسه فاضية يا هندسة.")
