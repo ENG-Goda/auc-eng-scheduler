@@ -38,13 +38,13 @@ with st.container():
     name = st.text_input("اسمك المنور (عشان نعرف مين اللي هيسحلنا معاه)")
     days = st.multiselect("اختار أكتر 3 أيام 'رايقين' معاك في الأسبوع", 
                         ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
-                        max_selections=3)
+                        max_selections=2)
     times = st.multiselect("(أفضل مواعيد (ماتختارش وقت الماتشات بالله عليك", 
                          ['6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM', '10:00 PM', '11:00 PM'],
                          max_selections=2)
     
     if st.button("تأكيد وإرسال الاختيارات 🚀"):
-        if name and len(days) == 3 and len(times) == 2:
+        if name and len(days) == 2 and len(times) == 2:
             st.balloons()
             df = load_data()
             new_entry = {'Name': name, 'Days': ", ".join(days), 'Times': ", ".join(times)}
@@ -91,6 +91,7 @@ with st.expander("Admin Access (Mahmoud Only) 🤫"):
                     st.rerun()
         else:
             st.info("قاعدة البيانات لسه فاضية أو محتاجة أول تسجيل بالنسخة الجديدة.")
+
 
 
 
